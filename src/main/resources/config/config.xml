@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 全局配置参数，需要时再设置 -->
+	<settings>
+		<!-- <setting name="logImpl" value="log4j"/> -->
+		<!-- 打开延迟加载 -->
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<!-- 将积极加载改为消极加载即按需要加载 -->
+		<setting name="aggressiveLazyLoading" value="false"/>
+	</settings>
+ 	<!-- 配置别名 -->
+	<typeAliases>
+		<!-- 通过package设置后com.parkingms.bean包下的都以类名作为别名 -->
+		<package name="com.parkingms.bean"/>
+	</typeAliases> 
+</configuration>

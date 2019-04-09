@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- 加载配置文件 -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:config/jdbc.properties</value>
+				<value>classpath:config/mail.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 配置数据源 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${jdbc.driverClass}" />  <!--数据库连接驱动 -->
+		<property name="jdbcUrl" value="${jdbc.jdbcUrl}" />     <!--数据库地址 -->
+		<property name="user" value="${jdbc.user}" />   <!--用户名 -->
+		<property name="password" value="${jdbc.password}" />   <!--密码 -->
+		<property name="maxPoolSize" value="40" />      <!--最大连接数 -->
+		<property name="minPoolSize" value="1" />       <!--最小连接数 -->
+		<property name="initialPoolSize" value="10" />      <!--初始化连接池内的数据库连接 -->
+		<property name="maxIdleTime" value="20" />  <!--最大空闲时间 -->
+	</bean>
+
+	<!-- ==============整合mybatis==================== -->
+	<!--配置sqlSessionFactory 并将数据源注入 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!--注入数据源 -->
+		<property name="dataSource" ref="dataSource" />
+		<!--指定要使用到到mybatis配置文件 -->
+		<property name="configLocation" value="classpath:config/config.xml" />
+		<!--用于配置mapper映射xml -->
+		<property name="mapperLocations" value="classpath*:com/parkingms/mapper/*.xml" />
+	</bean>
+
+	<!-- 创建数据映射器 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 包下所有的接口都会被容器自动产生实现类 -->
+		<property name="basePackage" value="com.parkingms.dao" />
+	</bean>
+
+	<!-- 创建事务管理器：DatasourceTransanctionManager针对jdbc或者mybatis -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!--配置邮件接口 -->
+	<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${mail.smtp.host}" />
+		<property name="username" value="${mail.smtp.username}" />
+		<property name="password" value="${mail.smtp.password}" />
+		<property name="defaultEncoding" value="${mail.smtp.defaultEncoding}" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">${mail.smtp.auth}</prop>
+				<prop key="mail.smtp.timeout">${mail.smtp.timeout}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- spring组件扫描器 -->
+	<context:component-scan base-package="com.parkingms.service" />
+	<context:component-scan base-package="com.parkingms.aop" />
+
+	<!-- 开启注解式事务扫描 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- 自动为切面方法中匹配的方法所在的类生成代理对象。 -->
+	<aop:aspectj-autoproxy />
+
+	<!-- 1. 配置 SecurityManager! -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="authenticator" ref="authenticator"></property>
+		<property name="sessionManager" ref="sessionManager" />
+		<property name="realms">
+			<list>
+				<ref bean="jdbcRealm" />
+			</list>
+		</property>
+		<property name="rememberMeManager.cookie.maxAge" value="20"></property>
+	</bean>
+	<!-- 2. 配置 CacheManager. 2.1 需要加入 ehcache 的 jar 包及配置文件. -->
+
+	<bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
+		<property name="authenticationStrategy">
+			<bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy"></bean>
+		</property>
+	</bean>
+	<!-- 3. 配置 Realm 3.1 直接配置实现了 org.apache.shiro.realm.Realm 接口的 bean -->
+	<bean id="jdbcRealm" class="com.parkingms.shiro.ShiroRealm">
+		<property name="credentialsMatcher">
+			<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+				<property name="hashAlgorithmName" value="MD5"></property>
+			</bean>
+		</property>
+	</bean>
+	<!-- 4. 配置 LifecycleBeanPostProcessor. 可以自定的来调用配置在 Spring IOC 容器中 shiro 
+		bean 的生命周期方法. -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+	<!-- Enable Shiro Annotations for Spring-configured beans. Only run after 
+		the lifecycleBeanProcessor has run: -->
+	<!-- 5. 启用 IOC 容器中使用 shiro 的注解. 但必须在配置了 LifecycleBeanPostProcessor 之后才可以使用. -->
+	<bean
+		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+		depends-on="lifecycleBeanPostProcessor" />
+	<bean
+		class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager" />
+	</bean>
+	<!-- 6. 配置 ShiroFilter. 6.1 id 必须和 web.xml 文件中配置的 DelegatingFilterProxy 
+		的 <filter-name> 一致. 若不一致, 则会抛出: NoSuchBeanDefinitionException. 因为 Shiro 会来 
+		IOC 容器中查找和 <filter-name> 名字对应的 filter bean. -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />
+		<property name="loginUrl" value="/jsp/login.jsp" />
+		<property name="filterChainDefinitionMap" ref="filterChainDefinitionMap"></property>
+		<property name="unauthorizedUrl" value="/jsp/login.jsp"></property>
+	</bean>
+	<!-- 配置一个 bean, 该 bean 实际上是一个 Map. 通过实例工厂方法的方式 -->
+	<bean id="filterChainDefinitionMap" factory-bean="filterChainDefinitionMapBuilder"
+		factory-method="buildFilterChainDefinitionMap"></bean>
+	<bean id="filterChainDefinitionMapBuilder" class="com.parkingms.shiro.FilterChainDefinitionMapBuilder"></bean>
+	<bean id="sessionDAO" class="org.apache.shiro.session.mgt.eis.MemorySessionDAO">
+	</bean>
+
+	<bean id="sessionManager"
+		class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<property name="sessionListeners" ref="CountOnlinePeopleListener" />
+		<property name="globalSessionTimeout" value="1800000" />
+		<property name="deleteInvalidSessions" value="true" />
+		<property name="sessionValidationSchedulerEnabled" value="true" />
+		<property name="sessionValidationInterval" value="1800000" />
+		<property name="sessionDAO" ref="sessionDAO" />
+		<property name="sessionIdUrlRewritingEnabled" value="false" />
+	</bean>
+	<bean id="CountOnlinePeopleListener" class="com.parkingms.listener.CountOnlinePeopleListener"></bean>
+	<!-- 解决退出时跳转到url，url带sessionid -->
+	<bean id="logout" class="org.apache.shiro.web.filter.authc.LogoutFilter">
+		<property name="redirectUrl" value="/jsp/login.jsp" />
+	</bean>
+
+</beans>

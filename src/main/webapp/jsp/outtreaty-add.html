@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>新增外部合约</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+
+<link rel="stylesheet" href="../lib/layuinew/css/layui.css">
+<script type="text/javascript" src="../js/jQuery-2.2.2.js"></script>
+
+
+<style>
+body {
+	padding: 20px;
+}
+</style>
+</head>
+<body>
+	<div style="line-height:35px">
+		<span class="layui-breadcrumb"> <a href="jsp/index.jsp">首页</a>
+			<a href="jsp/outtreaty-list.jsp">外部合约管理</a> <a href="jsp/outtreaty-renew.jsp"><cite>新增外部合约</cite></a>
+		</span>
+		<div class="layui-input-inline" style="float:right">
+			<button class="layui-btn layui-btn-sm"
+				onclick="window.location.reload()">
+				<i class="layui-icon">&#xe669;</i>
+			</button>
+		</div>
+		<hr class="layui-bg-gray" style="margin-top: 0">
+	</div>
+
+	<div>
+		<form class="layui-form">
+			<div class="layui-form-item">
+				<label class="layui-form-label"> 原合同编号 </label>
+				<div class="layui-input-inline">
+					<input type="text" id="formerno" name="" required=""
+						lay-verify="required" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-label"> 合同编号 </label>
+				<div class="layui-input-inline">
+					<input type="text" id="newno" name="" required="" onblur=""
+						lay-verify="required" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-label"> 合同单位 </label>
+				<div class="layui-input-inline">
+					<input type="text" id="company" name="" required=""
+						lay-verify="required" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label"> 双方联系人 </label>
+				<div class="layui-input-inline">
+					<input type="text" id="contact" name="" required=""
+						lay-verify="required" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-label"> 双方联系电话 </label>
+				<div class="layui-input-inline">
+					<input type="text" id="tel" name="" required=""
+						lay-verify="phone" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label"> 车位编号</label>
+				<div class="layui-input-inline" style="width: 100px;">
+					<input type="text" autocomplete="off" class="layui-input"
+						id="begincarnum">
+				</div>
+				<div class="layui-form-mid">-</div>
+				<div class="layui-input-inline" style="width: 100px;">
+					<input type="text" autocomplete="off" class="layui-input"
+						id="endcarnum">
+				</div>
+				<div class="layui-form-mid layui-word-aux">若只有一个车位，第二个输入框不填</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label"> 车位所属单位详细地址 </label>
+				<div class="layui-input-inline">
+					<input type="text" id="addr" name="" required=""
+						lay-verify="required" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label"> 合同生效日期 </label>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input" id="beginTime">
+				</div>
+				<label class="layui-form-label"> 合同截止日期 </label>
+				<div class="layui-inline">
+					<input type="text" class="layui-input" id="endTime">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label"> 上传合同复印件 </label>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn" id="uploadImg">
+						<i class="layui-icon">&#xe67c;</i>上传图片
+					</button>
+				</div>
+			</div>
+			<div id="img"></div>
+			<div class="layui-form-item">
+				<label class="layui-form-label"> </label>
+				<button type="button" class="layui-btn" lay-filter="" lay-submit=""
+					onclick="commit()">增加</button>
+			</div>
+		</form>
+	</div>
+
+
+	<!-- 底部固定区域 -->
+	<div class="layui-layout-admin">
+		<div class="layui-footer" style="left:0;text-align: center;">
+			<p>Copyright ©2018 CBD车位管理系统 v1.0 All Rights Reserved.</p>
+		</div>
+	</div>
+	<script src="../lib/layuinew/layui.js"></script>
+	<script type="text/javascript">
+	
+	</script>
+	<script>
+		layui.use('element', function() {
+			var element = layui.element;
+	
+		});
+	</script>
+	<script>
+	
+		layui.use('form', function() {
+			var form = layui.form;
+		});
+	</script>
+	<script>
+		layui.use('laydate', function() {
+			var laydate = layui.laydate;
+	
+			//执行一个laydate实例
+			laydate.render({
+				elem : '#beginTime', //指定元素
+				type: 'datetime'
+				,min :0
+				,done:function(value,date){
+				endDate.config.min={
+				year:date.year,
+				month:date.month-1,
+				date:date.date,
+				hours:date.hours,
+				minutes:date.minutes,
+				seconds:date.seconds
+				};
+				}
+			});
+	
+			laydate.render({
+				elem : '#endTime', //指定元素
+				type: 'datetime'
+				,min :0
+				,done:function(value,date){
+				endDate.config.max={
+				year:date.year,
+				month:date.month-1,
+				date:date.date,
+				hours:date.hours,
+				minutes:date.minutes,
+				seconds:date.seconds
+				};
+				}
+			});
+	
+	
+		});
+	</script>
+	<script>
+		layui.use('upload', function() {
+			var upload = layui.upload;
+			//执行实例
+			var uploadInst = upload.render({
+				elem : '#uploadImg', //绑定元素
+				url : '../fileUpLoad.action', //上传接口 （这里发送请求）
+				accept : 'images', //上传格式
+				size : 102400000, //最大允许的文件大小
+				exts : 'jpg|png',
+				before : function(obj) {
+					//预读本地文件示例，不支持ie8
+					obj.preview(function(index, file, result) {
+						$('#img').attr('src', result); //图片链接（base64）
+					});
+				},
+				done : function(res) {
+				if(res.code>0){
+				alert("上传异常");
+				}
+				},
+				error : function() {
+	
+					//请求异常回调
+				}
+			});
+		});
+	</script>
+	<script type="text/javascript">
+		function commit() {
+			var begincarnum = $("#begincarnum").val();
+			var endcarnum = $("#endcarnum").val();
+			var carNum = "";
+			if (endcarnum.length==0) {
+				carNum = begincarnum;
+			} else {
+				carNum = begincarnum + "-" + endcarnum;
+			}
+			$.ajax({
+				url : "../companyUpLoad.action",
+				method : "post",
+				dataType : 'json',
+				data : {
+					formerno : $("#formerno").val(),
+					newno : $("#newno").val(),
+					company : $("#company").val(),
+					contact : $("#contact").val(),
+					carNum : carNum,
+					addr : $("#addr").val(),
+					tel : $("#tel").val(),
+					endtime : $("#endTime").val(),
+					begintime : $("#beginTime").val()
+				},
+				async : true,
+				success : function(message) {
+	
+					if (message == "yes")
+						window.location.href = "<%=basePath%>/jsp/outtreaty-list.jsp";else {
+						alert("上传成功");
+						location.reload();
+					}
+	
+	
+				}
+			});
+		}
+	</script>
+</body>
+</html>

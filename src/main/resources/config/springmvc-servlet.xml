@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd"
+	> 
+	
+	<!-- spring包扫描功能 -->
+	<context:component-scan base-package="com.parkingms.action"/>
+	
+	<!-- 配置注解映射处理器 -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
+
+	<!-- 配置注解处理器适配器 -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="jackson"></ref>
+			</list>
+		</property>    
+    </bean>
+
+	<!-- 配置视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- <property name="prefix" value="jsp/"></property>
+		<property name="suffix" value=".jsp"></property> -->
+	</bean>
+	
+	<!-- json解析器 -->
+	<bean id="jackson" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=utf-8</value>
+				<value>text/html;charset=utf-8</value>
+				<value>text/json;charset=utf-8</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 注册springmvc的文件上传组件 文件解析器 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 最大文件大小，单位字节 -->
+		<property name="maxUploadSize" value="2097152"></property>
+	</bean>
+	
+	<!-- 自动为切面方法中匹配的方法所在的类生成代理对象。 -->
+    <aop:aspectj-autoproxy />
+</beans>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.parkingms.dao.ICompanytreatyDao">
+	<select id="findCompanytreaty" resultMap="CompanytreatyMap">
+		select * from t_companytreaty ct
+		LEFT JOIN t_company co ON
+		ct.companytreaty_c_id = co.company_id
+		<where>
+			<if test="bean.id gt 0">
+				AND companytreaty_id = #{bean.id}
+			</if>
+			<if test="bean.companyname != null and bean.companyname != ''">
+				AND companytreaty_company like '%${bean.companyname}%'
+			</if>
+			<if test="bean.begintime != null and bean.endtime != null">
+				AND companytreaty_begintime &gt;= #{bean.begintime} AND
+				companytreaty_endtime &lt;= #{bean.endtime}
+			</if>
+			<if test="bean.begintime != null and bean.begintime != ''">
+				AND companytreaty_begintime &gt;= #{bean.begintime}
+			</if>
+			<if test="bean.endtime != null and bean.endtime != ''">
+				AND companytreaty_endtime &lt;= #{bean.endtime}
+			</if>
+			and ct.flag = 0
+		</where>
+		limit ${(page-1)*num},#{num};
+	</select>
+
+	<select id="findTotalNum" resultType="java.lang.Integer">
+		select count(*) from t_companytreaty
+		<where>
+			<if test="bean.id gt 0">
+				AND companytreaty_id = #{bean.id}
+			</if>
+			<if test="bean.companyname != null and bean.companyname != ''">
+				AND companytreaty_company like '%${bean.companyname}%'
+			</if>
+			<if test="bean.begintime != null and bean.endtime != null">
+				AND companytreaty_begintime &gt;= #{bean.begintime} AND
+				companytreaty_endtime &lt;= #{bean.endtime}
+			</if>
+			<if test="bean.begintime != null and bean.begintime != ''">
+				AND companytreaty_begintime &gt;= #{bean.begintime}
+			</if>
+			<if test="bean.endtime != null and bean.endtime != ''">
+				AND companytreaty_endtime &lt;= #{bean.endtime}
+			</if>
+			and flag = 0;
+		</where>
+	</select>
+	<resultMap type="CompanytreatyBean" id="CompanytreatyMap">
+		<id property="id" column="companytreaty_id" />
+		<result property="formerno" column="companytreaty_formerno" />
+		<result property="newno" column="companytreaty_newno" />
+		<result property="companyname" column="companytreaty_company" />
+		<result property="contact" column="companytreaty_contact" />
+		<result property="tel" column="companytreaty_tel" />
+		<result property="begintime" column="companytreaty_begintime" />
+		<result property="endtime" column="companytreaty_endtime" />
+		<result property="img" column="companytreaty_img" />
+		<association property="company" javaType="CompanyBean">
+			<id property="id" column="company_id" />
+			<result property="name" column="company_name" />
+			<result property="addr" column="company_addr" />
+			<result property="contact" column="company_contact" />
+			<result property="tel" column="company_tel" />
+		</association>
+		<collection property="cbdcarlist" ofType="CbdcarBean"
+			column="companytreaty_id" select="com.parkingms.dao.ICbdcarDao.findCbdcarById"></collection>
+	</resultMap>
+</mapper>

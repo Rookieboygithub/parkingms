@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.parkingms.dao.ILandlordLetDao">
+<!-- 	<select id="getListAvailable" resultMap="Letmap">
+		SELECT * FROM vi_car_let_user
+		<where>
+			landlordcar_status IN (2,3)
+			<if test="beginTime != null">AND landlordlet_begintime &lt;= #{beginTime} AND landlordlet_endtime &gt;= #{beginTime}</if>
+			<if test="endTime != null">AND landlordlet_beginTime &lt;= #{endTime} AND landlordlet_endTime &gt;= #{endTime}</if>
+		</where>
+
+	</select> -->
+	
+	<!-- 分页显示可显示的招租信息(可带条件筛选)  -->
+	<select id="getListAvailableByPage" resultMap="Letmap">
+		SELECT * FROM vi_car_let_user
+		<where>
+			landlordcar_status IN (2,3)
+			<if test="bean.landlordCar != null and bean.landlordCar.location != null and bean.landlordCar.location !=''">AND landlordcar_location like CONCAT("%",#{bean.landlordCar.location},"%")</if>
+			<if test="bean.beginTime != null">AND landlordlet_begintime &lt;= #{bean.beginTime} AND landlordlet_endtime &gt;= #{bean.beginTime}</if>
+			<if test="bean.endTime != null">AND landlordlet_beginTime &lt;= #{bean.endTime} AND landlordlet_endTime &gt;= #{bean.endTime}</if>
+			<if test="bean.landlordCar != null and bean.landlordCar.status != null">AND landlordcar_status = #{bean.landlordCar.status}</if>
+		</where>
+		ORDER BY landlordcar_id LIMIT #{begin},#{limit} 
+	</select>
+	
+	<!-- 统计可显示的招租信息数量(可带条件筛选) -->
+	<select id="countAvailable" parameterType="LandlordLetBean" resultType="int">
+		SELECT COUNT(landlordcar_id) FROM vi_car_let_user 
+		<where>
+			landlordcar_status IN (2,3)
+			<if test="landlordCar != null and landlordCar.location != null and landlordCar.location !=''">AND landlordcar_location like CONCAT("%",#{landlordCar.location},"%")</if>
+			<if test="beginTime != null">AND landlordlet_begintime &lt;= #{beginTime} AND landlordlet_endtime &gt;= #{beginTime}</if>
+			<if test="endTime != null">AND landlordlet_beginTime &lt;= #{endTime} AND landlordlet_endTime &gt;= #{endTime}</if>
+			<if test="landlordCar != null and landlordCar.status != null">AND landlordcar_status = #{landlordCar.status}</if>
+		</where>
+	</select>
+	
+	<!-- <select id="getListById" parameterType="int" resultMap="Letmap">
+		SELECT * FROM vi_car_let_user WHERE user_id=#{id}
+	</select> -->
+	
+	<!-- 修改招租信息 -->
+	<update id="update" parameterType="LandlordLetBean">
+		UPDATE t_landlordlet 
+		<set>
+			<if test="beginTime != null">landlordlet_begintime = #{beginTime},</if>
+			<if test="endTime != null">landlordlet_endtime = #{endTime},</if>
+			<if test="price != 0">landlordlet_price = #{price},</if>
+		</set>
+		WHERE landlordlet_id = #{id}
+	</update>
+	
+	<resultMap type="LandLordLetBean" id="Letmap">
+		<id property="id" column="landlordlet_id" />
+		<result property="beginTime" column="landlordlet_begintime" />
+		<result property="endTime" column="landlordlet_endtime" />
+		<result property="price" column="landlordlet_price" />
+		<association property="landlordCar" javaType="LandlordCarBean">
+			<id property="id" column="landlordcar_id" />
+			<result property="location" column="landlordcar_location" />
+			<result property="carNo" column="landlordcar_num" />
+			<result property="status" column="landlordcar_status" />
+		</association>
+		<association property="landlord" javaType="UserBean">
+			<id property="id" column="user_id" />
+			<result property="name" column="user_name" />
+			<result property="alias" column="user_alias" />
+			<result property="career" column="user_career" />
+			<result property="credit" column="user_credit" />
+		</association>
+	</resultMap>
+	
+	<!-- 根据包租婆id查看车位及租赁信息(可带条件筛选)，分页显示 -->
+	<select id="getListByLandlordId" resultMap="Letmap1">
+		SELECT * FROM vi_car_let
+		<where>
+			landlordcar_user_id = #{bean.landlord.id} 
+			<if test="bean.certificateNo != null and bean.certificateNo !=''">AND landlordcar_no like CONCAT("%",#{bean.certificateNo},"%")</if>
+			<if test="bean.carNo != null and bean.carNo !=''">AND landlordcar_num like CONCAT("%",#{bean.carNo},"%")</if>
+			<if test="bean.location != null and bean.location !=''">AND landlordcar_location like CONCAT("%",#{bean.location},"%")</if>
+			<if test="bean.status != null">AND landlordcar_status = #{bean.status}</if>
+		</where>
+		LIMIT #{begin},#{limit} 
+	</select>
+	
+	<!-- 根据包租婆id统计车位数量  -->
+	<select id="countCarsByLandlordId" parameterType="LandlordCarBean" resultType="int">
+		SELECT COUNT(landlordcar_id) FROM vi_car_let 
+		<where>
+			landlordcar_user_id = #{landlord.id} 
+			<if test="certificateNo != null and certificateNo !=''">AND landlordcar_no like CONCAT("%",#{certificateNo},"%")</if>
+			<if test="carNo != null and carNo !=''">AND landlordcar_num like CONCAT("%",#{carNo},"%")</if>
+			<if test="location != null and location !=''">AND landlordcar_location like CONCAT("%",#{location},"%")</if>
+			<if test="status != null">AND landlordcar_status = #{status}</if>
+		</where>
+	</select>
+	
+	<!-- 根据车位id查找车位招租信息  -->
+	<select id="getByCarId" parameterType="int" resultMap="Letmap1">
+		SELECT * FROM vi_car_let WHERE landlordcar_id = #{id}
+	</select>
+	
+	<resultMap type="LandlordLetBean" id="Letmap1">
+		<id property="id" column="landlordcar_id" />
+		<result property="beginTime" column="landlordlet_begintime" />
+		<result property="endTime" column="landlordlet_endtime" />
+		<result property="price" column="landlordlet_price" />
+		<association property="landlordCar" javaType="LandlordCarBean">
+			<id property="id" column="landlordcar_id" />
+			<result property="certificateNo" column="landlordcar_no" />
+			<result property="location" column="landlordcar_location" />
+			<result property="carNo" column="landlordcar_num" />
+			<result property="img" column="landlordcar_img" />
+			<result property="status" column="landlordcar_status" />
+			<result property="time" column="landlordcar_time" />
+		</association>
+		<association property="landlord" javaType="UserBean">
+			<id property="id" column="landlordcar_user_id" />
+		</association>
+	</resultMap>
+	
+	
+	
+</mapper>

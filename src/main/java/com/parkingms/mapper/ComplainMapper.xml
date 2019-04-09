@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.parkingms.dao.IComplainDao">
+	<select id="showAllComplain" resultMap="map">
+		SELECT * FROM v_complainmessage;
+	</select>
+	
+	<resultMap type="ComplainBean" id="map">
+		<id property="id" column="complain_id" />
+		<result property="reasons" column="complain_reason" />
+		<result property="date" column="complain_time" />
+		<result property="status" column="complain_status" />
+		<result property="dealreason" column="complain_dealreason" />
+		<!--集合一面 -->
+		<!-- 投诉人 -->
+		<association javaType="UserBean" property="complaint">
+			<result property="alias" column="user_alias" />
+		</association>
+		<!-- 被投诉人 -->
+		<association javaType="UserBean" property="defendant">
+			<result property="alias" column="t_user_alias" />
+		</association>
+		<!-- 订单 -->
+		<association javaType="DealBean" property="deal">
+			<result property="no" column="deal_no" />
+		</association>
+	</resultMap>
+</mapper>

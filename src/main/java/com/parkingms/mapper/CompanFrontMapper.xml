@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.parkingms.dao.ICompanyFrontDao">
+	<!-- 查询对应id的合同 -->
+	<select id="selectCompanyTreatyById" resultMap="id_treaty">
+		SELECT * FROM t_companytreaty WHERE companytreaty_id = #{id};
+	</select>
+	<resultMap type="com.parkingms.bean.CompanytreatyBean" id="id_treaty">
+		<id property="id" column="companytreaty_id" />
+		<result property="formerno" column="companytreaty_formerno" />
+		<result property="newno" column="companytreaty_newno" />
+		<result property="companyname" column="companytreaty_company" />
+		<result property="contact" column="companytreaty_contact" />
+		<result property="tel" column="companytreaty_tel" />
+		<result property="begintime" column="companytreaty_begintime" />
+		<result property="endtime" column="companytreaty_endtime" />
+		<result property="img" column="companytreaty_img" />
+	</resultMap>
+
+	<!--查询企业所有合同 -->
+	<select id="selectCompanytreaty" resultMap="treatyAll">
+		SELECT * FROM
+		t_company c
+		LEFT JOIN t_companytreaty co
+		ON c.company_id =
+		co.companytreaty_c_id
+		<where>
+			c.company_id= #{bean.id} AND co.flag = 0
+			<if test="treaty.id != 0 and treaty.id != null">
+				AND co.companytreaty_id = #{treaty.id}
+			</if>
+			<if test="treaty.newno != '' and treaty.newno != null">
+				AND co.companytreaty_newno like '%${treaty.newno}%'
+			</if>
+			<if test="treaty.begintime != null">
+				AND co.companytreaty_begintime &gt;= #{treaty.begintime}
+			</if>
+			<if test="treaty.endtime != null">
+				AND co.companytreaty_endtime &lt;= #{treaty.endtime}
+			</if>
+		</where>
+
+		limit
+		${page*limit},${limit}
+	</select>
+	<resultMap type="com.parkingms.bean.CompanytreatyBean" id="treatyAll">
+		<id property="id" column="companytreaty_id" />
+		<result property="formerno" column="companytreaty_formerno" />
+		<result property="newno" column="companytreaty_newno" />
+		<result property="companyname" column="companytreaty_company" />
+		<result property="contact" column="companytreaty_contact" />
+		<result property="tel" column="companytreaty_tel" />
+		<result property="begintime" column="companytreaty_begintime" />
+		<result property="endtime" column="companytreaty_endtime" />
+		<collection property="cbdcarlist" ofType="com.parkingms.bean.CbdcarBean">
+			<id property="id" column="cbdcar_id" />
+			<result property="no" column="cbdcar_no" />
+			<result property="addr" column="cbdcar_addr" />
+			<result property="status" column="cbdcar_status" />
+		</collection>
+	</resultMap>
+	<!--查询合同数量 -->
+	<select id="selectCompanytreatyNumber" resultType="int">
+		SELECT COUNT(companytreaty_id) FROM
+		t_company c
+		LEFT JOIN
+		t_companytreaty co
+		ON c.company_id =
+		co.companytreaty_c_id
+		WHERE c.company_id= #{bean.id} AND co.flag = 0
+	</select>
+	<!--查看企业车位 -->
+	<select id="selectCompanyCbdcar" resultMap="cbdcar">
+		SELECT * FROM
+		t_company c LEFT JOIN t_companytreaty co ON c.company_id
+		= co.companytreaty_c_id LEFT JOIN
+		t_cbdcar cb ON
+		co.companytreaty_id = cb.cbdcar_c_id
+
+		<where>
+			c.company_id= #{bean.id}
+			<if test="id != 0 and id != null">
+				AND co.companytreaty_id = #{id}
+			</if>
+			<if test="cbdcar.no !=''and cbdcar.no !=null">
+				AND cb.cbdcar_no like '%${cbdcar.no}%'
+			</if>
+			<if test="cbdcar.addr !=''and cbdcar.addr !=null">
+				AND cb.cbdcar_addr like '%${cbdcar.addr}%'
+			</if>
+			and cb.flag =0
+			AND co.flag = 0
+		</where>
+
+		limit
+		${page*limit},${limit}
+	</select>
+	<resultMap type="com.parkingms.bean.CbdcarBean" id="cbdcar">
+		<id property="id" column="cbdcar_id" />
+		<result property="no" column="cbdcar_no" />
+		<result property="addr" column="cbdcar_addr" />
+		<result property="status" column="cbdcar_status" />
+		<association property="companytreaty" javaType="com.parkingms.bean.CompanytreatyBean">
+			<id property="id" column="companytreaty_id" />
+			<result property="formerno" column="companytreaty_formerno" />
+			<result property="newno" column="companytreaty_newno" />
+			<result property="companyname" column="companytreaty_company" />
+			<result property="contact" column="companytreaty_contact" />
+			<result property="tel" column="companytreaty_tel" />
+			<result property="begintime" column="companytreaty_begintime" />
+			<result property="endtime" column="companytreaty_endtime" />
+			<result property="img" column="companytreaty_img" />
+		</association>
+	</resultMap>
+	<!-- 查询车位数量 -->
+	<select id="selectCompanyCbdcarNumber" resultType="int">
+		SELECT COUNT(cbdcar_id) FROM
+		t_company c LEFT JOIN t_companytreaty co ON c.company_id
+		= co.companytreaty_c_id LEFT JOIN
+		t_cbdcar cb ON
+		co.companytreaty_id = cb.cbdcar_c_id
+
+		<where>
+			c.company_id= #{bean.id}
+
+			<if test="id != 0 and id != null">
+				AND co.companytreaty_id = #{id}
+			</if>
+			and cb.flag =0
+			AND co.flag = 0
+		</where>
+	</select>
+</mapper>

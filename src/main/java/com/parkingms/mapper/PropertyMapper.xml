@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.parkingms.dao.IPropertyDao">
+	<select id="getByURI"  parameterType="String" resultMap="propertymap">
+		SELECT * FROM t_property WHERE property_uri = #{uri} and flag = 0;
+	</select>
+	
+	<resultMap type="PropertyBean" id="propertymap">
+		<id property="id" column="property_id" />
+		<result property="uri" column="property_uri" />
+		<result property="count" column="property_count" />
+		<result property="totalTime" column="property_totalTime" />
+		<result property="averageTime" column="property_averageTime" />
+	</resultMap>
+</mapper>

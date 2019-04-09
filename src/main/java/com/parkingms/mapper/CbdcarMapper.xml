@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.parkingms.dao.ICbdcarDao">
+
+	<!-- 查询所有车位 -->
+	<select id="showCbdcar" resultMap="map">
+		SELECT * FROM t_cbdcar as a
+		LEFT JOIN t_outtreaty as b ON a.cbdcar_o_id=b.outtreaty_id
+		LEFT JOIN
+		t_companytreaty as c ON a.cbdcar_c_id=c.companytreaty_id
+	</select>
+	<!-- 根据车位出租状态查询车位 -->
+	<select id="findCbdcarByStatus" resultMap="map">
+		SELECT * FROM t_cbdcar
+		as a
+		LEFT JOIN t_outtreaty as b ON a.cbdcar_o_id=b.outtreaty_id
+		WHERE
+		cbdcar_status = #{status} AND a.flag = 0 LIMIT #{start}, #{count};
+	</select>
+	<!-- 分页展示所有车位 -->
+	<select id="findAllCbdcar" resultMap="map">
+		SELECT * FROM t_cbdcar as a
+		LEFT JOIN t_outtreaty as b ON a.cbdcar_o_id=b.outtreaty_id
+		LEFT JOIN
+		t_companytreaty as c ON a.cbdcar_c_id=c.companytreaty_id
+		WHERE a.flag = 0 LIMIT #{start}, #{count};
+	</select>
+	
+	<!-- 根据车位编号和车位地址查询车位状态 -->
+	<select id="findCbdcarByAddr" resultType="String">
+		SELECT cbdcar_status FROM t_cbdcar 
+		WHERE cbdcar_addr = #{bean.addr} AND cbdcar_status = 0 AND flag = 0 AND cbdcar_no IN (${str});
+	</select>
+	<!-- 根据车位编号和车位地址查询车位最长可租时间 -->
+	<select id="findMaxtimeByAddr" resultType="java.util.Date">
+		SELECT MIN(cbdcar_maxtime) FROM t_cbdcar 
+		WHERE cbdcar_addr = #{bean.addr} AND flag = 0 AND cbdcar_no IN (${str});
+	</select>
+	<!-- 根据车位出租状态查询车位 -->
+	<select id="findCbdcarById" resultMap="map">
+		SELECT * FROM t_cbdcar
+		WHERE cbdcar_c_id = #{id} AND flag = 0;
+	</select>
+
+	<resultMap type="CbdcarBean" id="map">
+		<id property="id" column="cbdcar_id" />
+		<result property="addr" column="cbdcar_addr" />
+		<result property="no" column="cbdcar_no" />
+		<result property="status" column="cbdcar_status" />
+		<result property="maxtime" column="cbdcar_maxtime" />
+		<!--集合一面 -->
+		<association javaType="OuttreatyBean" property="outtreaty">
+			<id property="id" column="outtreaty_id" />
+			<result property="endtime" column="outtreaty_endtime" />
+		</association>
+		<association javaType="CompanytreatyBean" property="companytreaty">
+			<id property="id" column="companytreaty_id" />
+			<result property="companyname" column="companytreaty_company" />
+			<result property="tel" column="companytreaty_tel" />
+		</association>
+	</resultMap>
+	<!-- 批量添加，一条sql -->
+	<insert id="insertCbdcar" parameterType="java.util.List">
+		insert into t_cbdcar (cbdcar_no,cbdcar_addr,cbdcar_status,cbdcar_o_id)
+		values
+		<foreach collection="bean" item="item" index="index"
+			separator=",">
+			(#{item.no},#{item.addr},#{item.status},#{item.outtreaty.id})
+		</foreach>
+	</insert>
+
+	<!-- 更新车位状态根据车位地址和编号 -->
+	<update id="updateCbdcar" parameterType="java.util.List">
+		<foreach collection="bean" item="item">
+			UPDATE t_cbdcar SET
+			cbdcar_status=#{item.status},cbdcar_c_id=#{item.companytreaty.id}
+			WHERE cbdcar_addr=#{item.addr} AND cbdcar_no=#{item.no};
+		</foreach>
+	</update>
+	<!-- 根据id,更新车位状态 -->
+	<update id="updateCbdcarByCcid">
+		UPDATE t_cbdcar SET cbdcar_status=#{status} WHERE
+		cbdcar_c_id = #{ccid} AND flag = 0;
+	</update>
+	<!-- 软删除通过地址和编号 -->
+	<update id="updateFlag" parameterType="java.util.List">
+		<foreach collection="bean" item="item">
+			UPDATE t_cbdcar SET
+			flag=1
+			WHERE cbdcar_addr=#{item.addr} AND cbdcar_no=#{item.no};
+		</foreach>
+	</update>
+	<!-- 查询未租赁车位总数 -->
+	<select id="findTotalRecords" resultType="int">
+		SELECT count(*) AS
+		count FROM t_cbdcar as a
+		LEFT JOIN t_outtreaty as b ON
+		a.cbdcar_o_id=b.outtreaty_id
+		WHERE cbdcar_status = 0 AND a.flag = 0;
+	</select>
+	<!-- 查询所有车位总数 -->
+	<select id="findfindAllCbdcarCount" resultType="int">
+		SELECT count(*) AS
+		count FROM t_cbdcar as a
+		LEFT JOIN t_outtreaty as b ON
+		a.cbdcar_o_id=b.outtreaty_id
+		WHERE a.flag = 0;
+	</select>
+	<!-- 根据页码查车位 -->
+	<select id="showCbdcarByPage" resultMap="map">
+		SELECT * FROM
+		t_cbdcar 
+		<where>
+			 flag = 0
+			<if test="bean.no !=null and bean.no != ''">AND cbdcar_no like CONCAT("%",#{bean.no},"%")</if> 
+			<if test="bean.addr !=null and bean.addr!= ''">AND cbdcar_addr like CONCAT("%",#{bean.addr},"%")</if> 
+			</where>
+		 limit ${page*limit},${limit}
+	</select>
+	<select id="findCbdcarNumber" resultType="int">
+		
+			SELECT COUNT(cbdcar_id) FROM t_cbdcar
+			<where>
+			 flag = 0
+			<if test="bean.no !=null and bean.no != ''">AND cbdcar_no like CONCAT("%",#{bean.no},"%")</if> 
+			<if test="bean.addr !=null and bean.addr!= ''">AND cbdcar_addr like CONCAT("%",#{bean.addr},"%")</if> 
+			</where>
+	</select>
+	<update id="deleteByFlag" parameterType="int">
+		UPDATE t_cbdcar SET flag=1 WHERE cbdcar_id=#{cbdcar_id}
+	</update>
+</mapper>

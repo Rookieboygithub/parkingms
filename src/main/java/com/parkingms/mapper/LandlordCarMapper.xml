@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.parkingms.dao.ILandlordCarDao">
+	<!-- <select id="getListByLandlordId" parameterType="int" resultMap="LandlordCarmap">
+		SELECT * FROM t_landlordcar WHERE landlordcar_user_id = #{id}
+	</select> -->
+	
+	<!-- <select id="getListByLandlordId" resultMap="LandlordCarmap">
+		SELECT * FROM vi_car_let WHERE landlordcar_user_id = #{id}
+	</select> -->
+
+<!-- 	<select id="getListValidByLandlordId" parameterType="int"
+		resultMap="LandlordCarmap">
+		SELECT * FROM t_landlordcar WHERE landlordcar_user_id =
+		#{id} AND landlordcar_status != 5 AND flag = 0
+	</select> -->
+
+<!-- 	<select id="getListAll" resultMap="LandlordCarmap">
+		SELECT * FROM t_landlordcar
+	</select> -->
+	
+	<!-- 分页查询车位信息（带条件筛选） -->
+	<select id="getListCars" resultMap="LandlordCarmap1">
+		SELECT * FROM vi_car_user
+		<where>
+			<if test="bean.landlord !=null and bean.landlord.name != null and bean.landlord.name !=''">AND user_name like CONCAT("%",#{bean.landlord.name},"%")</if> 
+			<if test="bean.landlord !=null and bean.landlord.alias != null and bean.landlord.alias !=''">AND user_alias like CONCAT("%",#{bean.landlord.alias},"%")</if> 
+			<if test="bean.certificateNo != null and bean.certificateNo !=''">AND landlordcar_no like CONCAT("%",#{bean.certificateNo},"%")</if>
+			<if test="bean.carNo != null and bean.carNo !=''">AND landlordcar_num like CONCAT("%",#{bean.carNo},"%")</if>
+			<if test="bean.location != null and bean.location !=''">AND landlordcar_location like CONCAT("%",#{bean.location},"%")</if>
+			<if test="bean.status != null">AND landlordcar_status = #{bean.status}</if>
+		</where>
+		LIMIT #{begin},#{limit}
+	</select>
+	
+	<!-- 统计车位信息数量（带条件筛选） -->
+	<select id="count" parameterType="LandlordCarBean" resultType="int">
+		SELECT COUNT(landlordcar_id) FROM vi_car_user
+		<where>
+			<if test="landlord != null and landlord.name != null and landlord.name !=''">AND user_name like CONCAT("%",#{landlord.name},"%")</if> 
+			<if test="landlord != null and landlord.alias != null and landlord.alias !=''">AND user_alias like CONCAT("%",#{landlord.alias},"%")</if> 
+			<if test="certificateNo != null and certificateNo !=''">AND landlordcar_no like CONCAT("%",#{certificateNo},"%")</if>
+			<if test="carNo != null and carNo !=''">AND landlordcar_num like CONCAT("%",#{carNo},"%")</if>
+			<if test="location != null and location !=''">AND landlordcar_location like CONCAT("%",#{location},"%")</if>
+			<if test="status != null">AND landlordcar_status = #{status}</if>
+		</where>
+	</select>
+	
+	<!-- 根据车位id查找车位信息 -->
+	<select id="getById" resultMap="LandlordCarmap1">
+		SELECT * FROM vi_car_user WHERE landlordcar_id = #{id}
+	</select>
+
+	<resultMap type="LandlordCarBean" id="LandlordCarmap">
+		<id property="id" column="landlordcar_id" />
+		<result property="certificateNo" column="landlordcar_no" />
+		<result property="location" column="landlordcar_location" />
+		<result property="carNo" column="landlordcar_num" />
+		<result property="img" column="landlordcar_img" />
+		<result property="status" column="landlordcar_status" />
+		<result property="time" column="landlordcar_time" />
+		<association property="landlord" javaType="UserBean"
+			select="com.parkingms.dao.IUserDao.getById" column="landlordcar_user_id">
+		</association>
+	</resultMap>
+
+	<resultMap type="LandlordCarBean" id="LandlordCarmap1">
+		<id property="id" column="landlordcar_id" />
+		<result property="certificateNo" column="landlordcar_no" />
+		<result property="location" column="landlordcar_location" />
+		<result property="carNo" column="landlordcar_num" />
+		<result property="img" column="landlordcar_img" />
+		<result property="status" column="landlordcar_status" />
+		<result property="time" column="landlordcar_time" />
+		<association property="landlord" javaType="UserBean">
+			<result property="name" column="user_name" />
+			<result property="alias" column="user_alias" />
+			<result property="addr" column="user_addr" />
+			<result property="tel" column="user_tel" />
+			<result property="cardNo" column="user_cardno" />
+			<result property="career" column="user_career" />
+		</association>
+	</resultMap>
+	
+	
+</mapper>

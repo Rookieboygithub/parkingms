@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.parkingms.dao.ILogDao">
+	<select id="getListByPage"  resultMap="logmap">
+		SELECT * FROM t_log
+		<where>
+			flag = 0
+			<if test="log.username != null and log.username !=''">AND log_username = #{log.username}</if>
+			<if test="log.method != null and log.method !=''">AND log_method LIKE CONCAT("%",#{log.method},"%")</if>
+			<if test="log.time != null">AND DATEDIFF(log_time,#{log.time}) = 0</if>
+			<if test="log.type != null">AND log_type = #{log.type}</if>
+		</where>
+		ORDER BY log_id DESC LIMIT #{begin},#{limit}
+	</select>
+	
+	<select id="count" parameterType="LogBean" resultType="int">
+		SELECT COUNT(log_id) FROM t_log
+		<where>
+			flag = 0
+			<if test="username != null and username !=''">AND log_username = #{username}</if>
+			<if test="method != null and method !=''">AND log_method LIKE CONCAT("%",#{method},"%")</if>
+			<if test="time != null">AND DATEDIFF(log_time,#{time}) = 0</if>
+			<if test="type != null">AND log_type = #{type}</if>
+		</where>
+	</select>
+	
+	<resultMap type="LogBean" id="logmap">
+		<id property="id" column="log_id" />
+		<result property="username" column="log_username" />
+		<result property="time" column="log_time" />
+		<result property="ip" column="log_ip" />
+		<result property="module" column="log_module" />
+		<result property="method" column="log_method" />
+		<result property="responseTime" column="log_responseTime" />
+		<result property="plantformType" column="log_plantformtype" />
+		<result property="type" column="log_type" />
+	</resultMap>
+</mapper>

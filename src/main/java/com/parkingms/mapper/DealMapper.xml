@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.parkingms.dao.IDealDao">
+	<!-- 更新订单状态及插入订单完成时间 -->
+	<!-- <update id="update" parameterType="DealBean">
+		UPDATE t_deal 
+		<set>
+			<if test="doneTime != null">deal_donetime = #{doneTime},</if>
+			<if test="status != 0">deal_status = #{status}</if>
+		</set>
+		WHERE deal_id = #{id} AND flag = 0
+	</update> -->
+	
+<!-- 	<select id="getList" parameterType="DealBean" resultMap="Dealmap">
+		SELECT * FROM vi_deal_car_user 
+		<where>
+			<if test="landlord != null">AND landlord_id = #{landlord.id}</if>
+			<if test="tenement != null">AND tenement_id = #{tenement.id}</if>
+		</where>
+	</select> -->
+	
+	<!-- 根据传入条件动态查询出租信息订单,分页显示 -->
+	<select id="getListByPage" resultMap="Dealmap">
+		SELECT * FROM vi_deal_car_user 
+		<where>
+			<if test="bean.landlordCar != null and bean.landlordCar.location != null and bean.landlordCar.location !=''">AND landlordCar_location like CONCAT("%",#{bean.landlordCar.location},"%")</if>
+			<if test="bean.landlordCar != null and bean.landlordCar.carNo != null and bean.landlordCar.carNo !=''">AND landlordCar_num like CONCAT("%",#{bean.landlordCar.carNo},"%")</if>
+			<if test="bean.landlord != null and bean.landlord.id != 0">AND landlord_id = #{bean.landlord.id}</if>
+			<if test="bean.landlord != null and bean.landlord.alias != null and bean.landlord.alias !=''">AND landlord_alias like CONCAT("%",#{bean.landlord.alias},"%")</if>
+			<if test="bean.tenement != null and bean.tenement.id != 0">AND tenement_id = #{bean.tenement.id}</if>
+			<if test="bean.tenement != null and bean.tenement.alias != null and bean.tenement.alias !=''">AND tenement_alias like CONCAT("%",#{bean.tenement.alias},"%")</if>
+			<if test="bean.status != null">AND deal_status = #{bean.status}</if>
+		</where>
+		ORDER BY deal_id DESC LIMIT #{begin},#{limit} 
+	</select>
+	
+	<!-- 根据传入条件动态统计订单数 -->
+	<select id="count" parameterType="DealBean" resultType="int">
+		SELECT COUNT(deal_no) FROM vi_deal_car_user 
+		<where>
+			<if test="landlordCar != null and landlordCar.location != null and landlordCar.location !=''">AND landlordCar_location like CONCAT("%",#{landlordCar.location},"%")</if>
+			<if test="landlordCar != null and landlordCar.carNo != null and landlordCar.carNo !=''">AND landlordCar_num like CONCAT("%",#{landlordCar.carNo},"%")</if>
+			<if test="landlord != null and landlord.id != 0">AND landlord_id = #{landlord.id}</if>
+			<if test="landlord != null and landlord.alias != null and landlord.alias !=''">AND landlord_alias like CONCAT("%",#{landlord.alias},"%")</if>
+			<if test="tenement != null and tenement.id != 0">AND tenement_id = #{tenement.id}</if>
+			<if test="tenement != null and tenement.alias != null and tenement.alias !=''">AND tenement_alias like CONCAT("%",#{tenement.alias},"%")</if>
+			<if test="status != null">AND deal_status = #{status}</if>
+		</where>
+	</select>
+	
+	<!-- 根据传入条件动态查询预约信息（即状态为0和1的订单），分页显示  -->
+	<select id="getListBookingByPage" resultMap="Dealmap">
+		SELECT * FROM vi_deal_car_user 
+		<where>
+			deal_status IN (0,1)
+			<if test="bean.landlordCar != null and bean.landlordCar.location != null and bean.landlordCar.location !=''">AND landlordCar_location like CONCAT("%",#{bean.landlordCar.location},"%")</if>
+			<if test="bean.landlordCar != null and bean.landlordCar.carNo != null and bean.landlordCar.carNo !=''">AND landlordCar_num like CONCAT("%",#{bean.landlordCar.carNo},"%")</if>
+			<if test="bean.landlord != null and bean.landlord.id != 0">AND landlord_id = #{bean.landlord.id}</if>
+			<if test="bean.tenement != null and bean.tenement.id != 0">AND tenement_id = #{bean.tenement.id}</if>
+			<if test="bean.tenement != null and bean.tenement.alias != null and bean.tenement.alias !=''">AND tenement_alias like CONCAT("%",#{bean.tenement.alias},"%")</if>
+			<if test="bean.status != null">AND deal_status = #{bean.status}</if>
+		</where>
+		LIMIT #{begin},#{limit}
+	</select>
+	
+	<!-- 根据传入条件动态统计预约数（即状态为0和1的订单） -->
+	<select id="countBooking" parameterType="DealBean" resultType="int">
+		SELECT COUNT(deal_no) FROM vi_deal_car_user 
+		<where>
+			deal_status IN (0,1)
+			<if test="landlordCar != null and landlordCar.location != null and landlordCar.location !=''">AND landlordCar_location like CONCAT("%",#{landlordCar.location},"%")</if>
+			<if test="landlordCar != null and landlordCar.carNo != null and landlordCar.carNo !=''">AND landlordCar_num like CONCAT("%",#{landlordCar.carNo},"%")</if>
+			<if test="landlord != null and landlord.id != 0">AND landlord_id = #{landlord.id}</if>
+			<if test="tenement != null and tenement.id != 0">AND tenement_id = #{tenement.id}</if>
+			<if test="tenement != null and tenement.alias != null and tenement.alias !=''">AND tenement_alias like CONCAT("%",#{tenement.alias},"%")</if>
+			<if test="status != null">AND deal_status = #{status}</if>
+		</where>
+		ORDER BY deal_id DESC
+	</select> 
+	
+	<!-- 根据传入条件动态查询一条出租订单 -->
+	<select id="get" parameterType="DealBean" resultMap="Dealmap">
+		SELECT * FROM t_deal 
+		<where>
+			<if test="id != 0">AND deal_id = #{id}</if>
+			<if test="no != null">AND deal_no = #{no}</if>
+		</where>
+	</select>
+	
+	
+	<resultMap type="DealBean" id="Dealmap">
+		<id property="id" column="deal_id" />
+		<result property="no" column="deal_no" />
+		<result property="beginTime" column="deal_begintime" />
+		<result property="endTime" column="deal_endtime" />
+		<result property="price" column="deal_price" />
+		<result property="message" column="deal_message" />
+		<result property="orderTime" column="deal_ordertime" />
+		<result property="doneTime" column="deal_donetime" />
+		<result property="status" column="deal_status" />
+		<association property="landlordCar" javaType="LandlordCarBean">
+			<id property="id" column="landlordcar_id" />
+			<result property="location" column="landlordcar_location" />
+			<result property="carNo" column="landlordcar_num" />
+		</association>
+		<association property="landlord" javaType="UserBean">
+			<id property="id" column="landlord_id" />
+			<result property="name" column="landlord_name" />
+			<result property="alias" column="landlord_alias" />
+		</association>
+		<association property="tenement" javaType="UserBean">
+			<id property="id" column="tenement_id" />
+			<result property="name" column="tenement_name" />
+			<result property="alias" column="tenement_alias" />
+			<result property="tel" column="tenement_tel" />
+			<result property="career" column="tenement_career" />
+			<result property="credit" column="tenement_credit" />
+		</association>
+	</resultMap>
+</mapper>

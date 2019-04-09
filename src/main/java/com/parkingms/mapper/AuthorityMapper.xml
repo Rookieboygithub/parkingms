@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.parkingms.dao.IAuthorityDao">
+
+	<!-- -->
+	<select id="findAll" resultMap="map">
+		SELECT *FROM t_authority;
+	</select>
+	<resultMap type="AuthorityBean" id="map">
+		<result property="uri" column="authority_uri"/>
+		<result property="role" column="authority_role"/>
+	</resultMap>
+</mapper>

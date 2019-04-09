@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.parkingms.dao.IUserDao">
+	<select id="getById" parameterType="int" resultMap="Usermap">
+		SELECT * FROM t_user WHERE user_id = #{id} AND flag = 0
+	</select>
+	
+	<select id="getByUsername" parameterType="String" resultMap="Usermap">
+		SELECT * FROM t_user WHERE user_alias = #{username} AND flag = 0
+	</select>
+	
+	<!-- <select id="getListOfLandlord"  resultMap="Usermap">
+		SELECT * FROM t_user WHERE user_role = 0 AND flag = 0
+	</select> -->
+	
+	<!-- 分页查询包租婆信息(带条件搜索) -->
+	<select id="getListLandlords"  resultMap="Usermap">
+		SELECT * FROM t_user
+		<where>
+			user_role = 0 AND flag = 0
+			<if test="bean.name !=null and bean.name != ''">AND user_name like CONCAT("%",#{bean.name},"%")</if> 
+			<if test="bean.alias !=null and bean.alias != ''">AND user_alias like CONCAT("%",#{bean.alias},"%")</if>
+			<if test="bean.tel !=null and bean.tel != ''">AND user_tel like CONCAT("%",#{bean.tel},"%")</if>
+			<if test="bean.cardNo !=null and bean.cardNo != ''">AND user_cardno like CONCAT("%",#{bean.cardNo},"%")</if>
+			<if test="bean.email !=null and bean.email != ''">AND user_email like CONCAT("%",#{bean.email},"%")</if>
+			<if test="bean.addr !=null and bean.addr != ''">AND user_addr like CONCAT("%",#{bean.addr},"%")</if>
+		</where>
+		LIMIT #{begin},#{limit} 
+	</select>
+	
+	<!-- 统计包租婆数量（带条件搜索） -->
+	<select id="countLandlords" resultType="int">
+		SELECT COUNT(user_id) FROM t_user
+		<where>
+			user_role = 0 AND flag = 0
+			<if test="name !=null and name != ''">AND user_name like CONCAT("%",#{name},"%")</if> 
+			<if test="alias !=null and alias != ''">AND user_alias like CONCAT("%",#{alias},"%")</if>
+			<if test="tel !=null and tel != ''">AND user_tel like CONCAT("%",#{tel},"%")</if>
+			<if test="cardNo !=null and cardNo != ''">AND user_cardno like CONCAT("%",#{cardNo},"%")</if>
+			<if test="email !=null and email != ''">AND user_email like CONCAT("%",#{email},"%")</if>
+			<if test="addr !=null and addr != ''">AND user_addr like CONCAT("%",#{addr},"%")</if>
+		</where>
+	</select>
+	
+	<select id="getUserByAccount" resultMap="Usermap" parameterType="String">
+		SELECT *FROM t_login WHERE  login_account=#{account} AND flag=0;
+	</select>
+	
+	<select id="getByTel" resultType="String">
+		SELECT login_account FROM t_login where login_id IN (SELECT user_login_id FROM t_user 
+		WHERE user_tel= #{user_tel} AND flag = 0) AND flag = 0
+	</select>
+	
+	<resultMap type="UserBean" id="Usermap">
+		<id property="id" column="user_id" />
+		<result property="name" column="user_name" />
+		<result property="alias" column="user_alias" />
+		<result property="addr" column="user_addr" />
+		<result property="tel" column="user_tel" />
+		<result property="cardNo" column="user_cardno" />
+		<result property="career" column="user_career" />
+		<result property="email" column="user_email" />
+		<result property="credit" column="user_credit" />
+		<result property="role" column="user_role" />
+		<result property="character" column="login_character"/>
+		<result property="pwd" column="login_pwd"/>
+		<result property="account" column="login_account"/>
+		<result property="loginId" column="login_id"/>
+	</resultMap>
+	
+	
+	<select id="getByLoginId" parameterType="int" resultType="int">
+		SELECT user_id FROM t_user WHERE user_login_id = #{loginId} AND flag = 0;
+	</select>
+	
+	<!-- 下面的内容为临时测试用 -->
+	<select id="getByLogin" parameterType="UserBean" resultMap="Usermap1">
+		SELECT t_login.*,t_user.* FROM t_login JOIN t_user ON user_login_id = login_id WHERE login_account=#{account} AND login_pwd
+		 =#{pwd} AND t_login.flag=0 and t_user.flag=0
+	</select>
+	
+	
+	
+	<resultMap type="UserBean" id="Usermap1">
+		<id property="id" column="user_id" />
+		<result property="name" column="user_name" />
+		<result property="alias" column="user_alias" />
+		<result property="addr" column="user_addr" />
+		<result property="tel" column="user_tel" />
+		<result property="cardNo" column="user_cardno" />
+		<result property="career" column="user_career" />
+		<result property="email" column="user_email" />
+		<result property="credit" column="user_credit" />
+		<result property="role" column="user_role" />
+		<result property="character" column="login_character"/>
+		<result property="pwd" column="login_pwd"/>
+		<result property="account" column="login_account"/>
+		<result property="loginId" column="login_id"/>
+	</resultMap>
+	
+</mapper>
