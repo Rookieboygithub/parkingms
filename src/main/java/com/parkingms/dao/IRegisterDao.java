@@ -6,8 +6,6 @@ import org.apache.ibatis.annotations.SelectKey;
 import org.apache.ibatis.annotations.Update;
 
 import com.parkingms.bean.JoinBean;
-import com.parkingms.bean.LoginBean;
-import com.parkingms.bean.UserBean;
 /**
  * 注册的dao接口,
  * 同时向两张表插入数据t_login和t_user

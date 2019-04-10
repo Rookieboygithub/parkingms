@@ -1,7 +1,6 @@
 package com.parkingms.service;
 
 import com.parkingms.bean.UserBean;
-import com.parkingms.bean.UserMessageBean;
 
 /**
  * 

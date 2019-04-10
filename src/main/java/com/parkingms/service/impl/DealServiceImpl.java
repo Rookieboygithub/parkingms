@@ -13,10 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.parkingms.aop.ParkingmsLog;
 import com.parkingms.bean.DealBean;
-import com.parkingms.bean.LandlordCarBean;
 import com.parkingms.dao.IDealDao;
 import com.parkingms.dao.ILandlordCarDao;
-import com.parkingms.dao.IPayinfoDao;
 import com.parkingms.service.IDealService;
 import com.parkingms.util.CreateDealNumberUtil;
 /**

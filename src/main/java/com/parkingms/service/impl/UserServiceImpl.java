@@ -7,12 +7,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.parkingms.aop.ParkingmsLog;
 import com.parkingms.bean.UserBean;
 import com.parkingms.dao.IUserDao;
 import com.parkingms.service.IUserService;
+
 /**
  * 业务层：处理与用户信息有关的业务逻辑
+ * 
  * @author 张怡
  *
  */
@@ -26,6 +27,7 @@ public class UserServiceImpl implements IUserService {
 	private IUserDao dao;
 	/**
 	 * 查询所有包租婆
+	 * 
 	 * @return
 	 */
 //	@Override
@@ -33,31 +35,33 @@ public class UserServiceImpl implements IUserService {
 //		List<UserBean> list = dao.getListOfLandlord();
 //		return list;
 //	}
-	
+
 	/**
 	 * 分页查询包租婆（带条件搜索）
 	 */
 	@Override
-	public Map<String, Object> findLandlordsByPage(int curr, int limit,UserBean bean) {
-		Map<String,Object> map = new HashMap<String, Object>();
-		List<UserBean> list = dao.getListLandlords((curr-1)*limit,limit,bean);
+	public Map<String, Object> findLandlordsByPage(int curr, int limit, UserBean bean) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<UserBean> list = dao.getListLandlords((curr - 1) * limit, limit, bean);
 		int total = dao.countLandlords(bean);
 		map.put("list", list);
 		map.put("total", total);
 		return map;
 	}
-	
+
 	/**
 	 * 统计包租婆数量（带条件搜索）
+	 * 
 	 * @return
 	 */
 	@Override
 	public int countLandlords(UserBean bean) {
 		return dao.countLandlords(bean);
 	}
-	
+
 	/**
 	 * 第一次访问页面获取第一页包租婆信息及包租婆总数
+	 * 
 	 * @return
 	 */
 //	@Override
@@ -73,7 +77,7 @@ public class UserServiceImpl implements IUserService {
 //		map.put("total", total);
 //		return map;
 //	}
-	
+
 	/**
 	 * 根据用户名查找包租婆信息
 	 */
@@ -89,9 +93,10 @@ public class UserServiceImpl implements IUserService {
 //		map.put("result", result);
 //		return map;
 //	}
-	
+
 	/**
 	 * 检查用户登陆
+	 * 
 	 * @param bean
 	 * @return
 	 */
@@ -100,7 +105,7 @@ public class UserServiceImpl implements IUserService {
 		UserBean user = dao.getByLogin(bean);
 		return user;
 	}
-	
+
 	/**
 	 * 根据登录Id获取用户Id
 	 */
@@ -108,5 +113,5 @@ public class UserServiceImpl implements IUserService {
 	public int findUserByLoginId(int loginId) {
 		return dao.getByLoginId(loginId);
 	}
-	
+
 }

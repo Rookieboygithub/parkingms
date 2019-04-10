@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.parkingms.aop.ParkingmsLog;
 import com.parkingms.bean.UserBean;
-import com.parkingms.bean.UserMessageBean;
 import com.parkingms.dao.IUserModifyDao;
 import com.parkingms.service.IUserModfiyService;
 import com.parkingms.util.LoginEncoding5;

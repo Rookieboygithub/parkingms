@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.parkingms.dao.ILogDao">
-	<select id="getListByPage"  resultMap="logmap">
+	<select id="getListByPage" resultMap="logmap">
 		SELECT * FROM t_log
 		<where>
 			flag = 0
@@ -14,7 +14,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</where>
 		ORDER BY log_id DESC LIMIT #{begin},#{limit}
 	</select>
-	
+
 	<select id="count" parameterType="LogBean" resultType="int">
 		SELECT COUNT(log_id) FROM t_log
 		<where>
@@ -25,7 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="type != null">AND log_type = #{type}</if>
 		</where>
 	</select>
-	
+
 	<resultMap type="LogBean" id="logmap">
 		<id property="id" column="log_id" />
 		<result property="username" column="log_username" />

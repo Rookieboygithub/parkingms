@@ -1,6 +1,5 @@
 package com.parkingms.service;
 
-import org.apache.ibatis.annotations.Select;
 
 import com.parkingms.bean.LoginBean;
 

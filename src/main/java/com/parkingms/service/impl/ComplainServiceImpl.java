@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.parkingms.bean.ComplainBean;
 import com.parkingms.bean.ComplainMessageBean;
-import com.parkingms.bean.DealBean;
 import com.parkingms.dao.IComplainDao;
 import com.parkingms.service.IComplainService;
 import com.parkingms.util.CreateComplainNumberUtil;

@@ -7,11 +7,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.parkingms.bean.JoinBean;
-import com.parkingms.bean.LoginBean;
-import com.parkingms.bean.UserBean;
 import com.parkingms.dao.IRegisterDao;
 import com.parkingms.service.IRegisterService;
-import com.parkingms.util.LoginEncoding5;
 import com.parkingms.util.MD5_Encoding;
 /**
  * 注册信息的操作，操作t_login和t_user两张表，开启事务

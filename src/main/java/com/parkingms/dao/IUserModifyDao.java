@@ -1,14 +1,11 @@
 package com.parkingms.dao;
 
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.springframework.stereotype.Repository;
 
 import com.parkingms.bean.UserBean;
-import com.parkingms.bean.UserMessageBean;
 /**
  * 
  * sql语句修改个人登录密码和用户信息

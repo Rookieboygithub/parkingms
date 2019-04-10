@@ -14,9 +14,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.parkingms.bean.CbdcarBean;
 import com.parkingms.bean.CompanyBean;
-import com.parkingms.bean.CompanytreatyBean;
 import com.parkingms.dao.ICompanyDao;
 import com.parkingms.service.ICompanyService;
 import com.parkingms.util.MD5_Encoding;

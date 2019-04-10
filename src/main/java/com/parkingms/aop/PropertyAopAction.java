@@ -1,17 +1,9 @@
 package com.parkingms.aop;
 
-import javax.servlet.http.HttpServletRequest;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.parkingms.bean.PropertyBean;
-import com.parkingms.service.IPropertyService;
 /**
  * 性能统计AOP
  * @author 张怡
@@ -23,8 +15,8 @@ public class PropertyAopAction {
 	/**
 	 * 自动注入IPropertyService接口，用来将性能信息保存到数据库
 	 */
-	@Autowired
-	private IPropertyService service;
+	//@Autowired
+	//private IPropertyService service;
 	
 	// 环绕通知
 //	@Around("@annotation(org.springframework.web.bind.annotation.RequestMapping)")

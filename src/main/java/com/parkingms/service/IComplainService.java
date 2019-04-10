@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.parkingms.bean.ComplainBean;
 import com.parkingms.bean.ComplainMessageBean;
-import com.parkingms.bean.DealBean;
 
 public interface IComplainService {
 	

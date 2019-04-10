@@ -2,7 +2,6 @@ package com.parkingms.listener;
 
 import java.util.Hashtable;
 
-import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingEvent;

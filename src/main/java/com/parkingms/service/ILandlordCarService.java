@@ -1,10 +1,8 @@
 package com.parkingms.service;
 
-import java.util.List;
 import java.util.Map;
 
 import com.parkingms.bean.LandlordCarBean;
-import com.parkingms.bean.UserBean;
 /**
  * 业务层接口：处理与车位信息表有关的业务逻辑
  * @author 张怡

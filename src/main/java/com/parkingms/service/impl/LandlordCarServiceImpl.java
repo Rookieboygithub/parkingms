@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.parkingms.aop.ParkingmsLog;
 import com.parkingms.bean.LandlordCarBean;
-import com.parkingms.bean.UserBean;
 import com.parkingms.dao.ILandlordCarDao;
 import com.parkingms.service.ILandlordCarService;
 /**

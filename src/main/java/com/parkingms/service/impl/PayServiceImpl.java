@@ -110,6 +110,7 @@ public class PayServiceImpl implements IPayService {
 		return signVerified;
 	}
 
+	@SuppressWarnings("unused")
 	@ParkingmsLog(module="支付", method="修改支付状态为已支付", plantform=0,type=1)
 	@Override
 	public String updatePaystStatus(HttpServletRequest request) {

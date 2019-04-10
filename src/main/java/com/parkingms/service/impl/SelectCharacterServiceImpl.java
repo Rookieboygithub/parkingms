@@ -3,7 +3,6 @@ package com.parkingms.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.parkingms.bean.UserBean;
 import com.parkingms.dao.ISelectIdentity;
 import com.parkingms.service.ISelectCharacterService;
 /**
